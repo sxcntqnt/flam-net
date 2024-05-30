@@ -29,7 +29,7 @@ fetchChannelConfig ${HOST_ORG} ${CHANNEL} config.json
 
 # Modify the configuration to append the new org
 set -x
-jq -s ".[0] * {\"channel_group\":{\"groups\":{\"Application\":{\"groups\": {\"${ORG}\":.[1]}}}}}" config.json ./organizations/peerOrganizations/${ORG}/${ORG}.json >modified_config.json
+jq -s ".[0] * {\"channel_group\":{\"groups\":{\"Application\":{\"groups\": {\"${ORG}\":.[1]}}}}}" config.json ./organizations/peerOrganizations/${ORG}/connection-${ORG}.json >modified_config.json
 { set +x; } 2>/dev/null
 
 # Compute a config update, based on the differences between config.json and modified_config.json, write it as a transaction to org3_update_in_envelope.pb

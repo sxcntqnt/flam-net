@@ -91,7 +91,7 @@ function fetchChannelConfig() {
 
   infoln "Fetching the most recent configuration block for the channel"
   set -x
-  peer channel fetch config channel-artifacts/config_block.pb -o orderer:7050 --ordererTLSHostnameOverride orderer -c $CHANNEL --tls --cafile $ORDERER_CA
+  peer channel fetch config config_block.pb -o orderer:7050 --ordererTLSHostnameOverride orderer -c $CHANNEL --tls --cafile $ORDERER_CA
   { set +x; } 2>/dev/null
 
   infoln "Decoding config block to JSON and isolating config to ${OUTPUT}"
@@ -107,8 +107,15 @@ function createConfigUpdate() {
   local OUTPUT=$4
 
   set -x
-  configtxlator proto_encode --input "${ORIGINAL}" --type common.Config >original_config.pb
-  configtxlator proto_encode --input "${MODIFIED}" --type common.Config >modified_config.pb
+  if ! configtxlator proto_encode --input "${ORIGINAL}" --type common.Config >original_config.pb; then
+    errorln "Error encoding original configuration: $?"
+    return 1
+  fi
+
+  if ! configtxlator proto_encode --input "${MODIFIED}" --type common.Config >modified_config.pb; then
+    errorln "Error encoding modified configuration: $?"
+    return 1
+  fi
   configtxlator compute_update --channel_id "${CHANNEL}" --original original_config.pb --updated modified_config.pb >config_update.pb
   configtxlator proto_decode --input config_update.pb --type common.ConfigUpdate >config_update.json
   echo '{"payload":{"header":{"channel_header":{"channel_id":"'$CHANNEL'", "type":2}},"data":{"config_update":'$(cat config_update.json)'}}}' | jq . >config_update_in_envelope.json

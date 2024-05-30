@@ -16,6 +16,11 @@ function printHelp() {
   exit
 }
 
+if [ -z "$1" ]; then
+  infoln "No command provided."
+  printHelp
+fi
+
 command=$1
 mode=$2
 
@@ -35,8 +40,8 @@ if [ "$command" = "network" ]; then
     ./createNetwork.sh --delete
     exit
   else
-  infoln "Unknown '$mode' mode."
-  printHelp
+    infoln "Unknown '$mode' mode."
+    printHelp
   fi
 elif [ "$command" = "channel" ]; then
   if [ "$mode" = "create" ]; then
@@ -48,8 +53,8 @@ elif [ "$command" = "channel" ]; then
     ./joinOrganizations.sh "$@"
     exit
   else
-  infoln "Unknown '$mode' mode."
-  printHelp
+    infoln "Unknown '$mode' mode."
+    printHelp
   fi
 elif [ "$command" = "user" ]; then
   if [ "$mode" = "create" ]; then
@@ -61,22 +66,21 @@ elif [ "$command" = "user" ]; then
     ./createUser.sh --list "$@"
     exit
   else
-  infoln "Unknown '$mode' mode."
-  printHelp
+    infoln "Unknown '$mode' mode."
+    printHelp
   fi
 elif [ "$command" = "peer" ]; then
   if [ "$mode" = "create" ]; then
     infoln "CREATE NEW PEER"
     ./addPeer.sh "$@"
     exit
-  fi
-  if [ "$mode" = "join" ]; then
+  elif [ "$mode" = "join" ]; then
     infoln "JOIN NEW PEER"
     ./joinPeerToChannel.sh "$@"
     exit
   else
-  infoln "Unknown '$mode' mode."
-  printHelp
+    infoln "Unknown '$mode' mode."
+    printHelp
   fi
 elif [ "$command" = "chaincode" ]; then
   if [ "$mode" = "deploy-org" ]; then
@@ -101,22 +105,21 @@ elif [ "$command" = "chaincode" ]; then
   fi
 elif [ "$command" = "install" ]; then
   if [ "$mode" = "prereqs" ]; then
-    infoln "INSTALL PREREQUESITES"
+    infoln "INSTALL PREREQUISITES"
     ./install.sh --prereqs
     exit
-  fi
-  if [ "$mode" = "bootstrap" ]; then
+  elif [ "$mode" = "bootstrap" ]; then
     infoln "INSTALL BOOTSTRAP"
     ./install.sh --bootstrap
     exit
   else
-  infoln "Unknown '$mode' mode."
-  printHelp
+    infoln "Unknown '$mode' mode."
+    printHelp
   fi
 elif [ "$command" = "help" ]; then
-  infoln "HELP" 
+  infoln "HELP"
   printHelp
 else
-  infoln "Unknow '$command' command."
+  infoln "Unknown '$command' command."
   printHelp
 fi
